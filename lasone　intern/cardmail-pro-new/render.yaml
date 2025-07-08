@@ -2,7 +2,7 @@ services:
   # Web Service for the Express server
   - type: web
     name: cardmail-pro-api
-    runtime: node
+    env: node
     buildCommand: cd server && npm install && npm run build
     startCommand: cd server && npm start
     envVars:
