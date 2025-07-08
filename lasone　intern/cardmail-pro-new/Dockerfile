@@ -31,6 +31,7 @@ RUN npm ci --production
 # Copy built application
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server/dist ./server/dist
+COPY --from=builder /app/server/node_modules ./server/node_modules
 
 # Expose port
 EXPOSE 4000
