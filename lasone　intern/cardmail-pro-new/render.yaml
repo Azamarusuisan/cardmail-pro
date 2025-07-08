@@ -1,0 +1,41 @@
+services:
+  # Web Service for the Express server
+  - type: web
+    name: cardmail-pro-api
+    runtime: node
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: FRONTEND_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      # APIキーはユーザーが個別に設定するため、サーバー側では不要
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: cardmail-redis
+          property: connectionString
+
+  # Static Site for the React app
+  - type: static
+    name: cardmail-pro-web
+    buildCommand: npm install && npm run build:client
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://cardmail-pro-api.onrender.com
+
+  # Redis for job queue
+  - type: redis
+    name: cardmail-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
